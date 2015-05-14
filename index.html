@@ -5,6 +5,7 @@
     <title>WhellIdictator Reader</title>
 
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="./indicator.js"></script>
 
     <style>
         body
@@ -25,6 +26,14 @@
             width: 100%;
             height: 400px;
             overflow: hidden;
+        }
+
+        .direction
+        {
+            font-size: 20px;
+            color: #000;
+            display: inline-block;
+            margin: 0 10px;
         }
 
     </style>
@@ -48,8 +57,7 @@
 
             var delts = [],
                 times = [],
-                $delta = $('.delta'),
-                $time = $('.time'),
+                $dir = $('.direction'),
                 $res = $('.result'),
                 lastTime = new Date(),
                 curTime = false;
@@ -65,10 +73,27 @@
 
                 $res.val('var deltasArr = [' + delts + '];' + '\n' + 'var timesArr = [' + times + ']');
             }, false);
+
+            new WheelIndicator({
+                callback: function(e){
+                    if(e.direction === 'up') {
+                        dir = 'fa fa-arrow-up';
+                    } else {
+                        dir = 'fa fa-arrow-down';
+                    }
+
+                    $dir.append('<i class="' + dir + '"></i>');
+                }
+            });
+
         });
     </script>
+
+    <link rel="stylesheet" href="./font-awesome.min.css">
+
 </head>
 <body>
     <textarea class="result" name="res" id="res" readonly></textarea>
+    <div class="direction"></div>
 </body>
 </html>
