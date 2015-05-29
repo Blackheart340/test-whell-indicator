@@ -50,7 +50,7 @@
         .graph_wrap
         {
             position: relative;
-            height: 400px;
+            height: 800px;
             width: 100%;
 
             overflow: hidden;
@@ -60,6 +60,7 @@
         {
             position: relative;
             margin-left: 300px;
+            margin-top: 400px;
         }
 
         .dot
@@ -125,7 +126,7 @@
             getDeltaY: function(event){
                 if(event.wheelDelta) {
                     getDeltaY = function(event) {
-                        return event.wheelDelta / -120;
+                        return event.wheelDelta;
                     }
                 } else {
                     getDeltaY = function(event) {
