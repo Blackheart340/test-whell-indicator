@@ -8,6 +8,17 @@
     <script src="./indicator.js"></script>
 
     <style>
+
+        h3
+        {
+            font-weight: normal;
+
+            margin: 40px 0 20px;
+            text-decoration: underline;
+
+            color: #000;
+        }
+
         body
         {
             font-family: Arial, Helvetica, sans-serif;
@@ -23,7 +34,7 @@
 
         .result
         {
-            width: 100%;
+            width: calc(100% - 20px);
             height: 400px;
             overflow: hidden;
         }
@@ -36,16 +47,86 @@
             margin: 0 10px;
         }
 
+        .graph_wrap
+        {
+            position: relative;
+            height: 800px;
+            width: 100%;
+
+            overflow: hidden;
+        }
+
+        .graph
+        {
+            position: relative;
+            margin-left: 300px;
+            margin-top: 400px;
+        }
+
+        .dot
+        {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: #000;
+            border-radius: 50%;
+        }
+
     </style>
 
     <script>
+        
+        var app = {
+            init: function(){
+                this.collectData();
 
-        $(document).ready(function(){
+                var self = this,
+                    dir = '';
+                
+                document.addEventListener('wheel', function(e){
+                    var delta = self.getDeltaY(e);
 
-            var getDeltaY = function(event){
+                    self.draw(delta);
+
+                    self.delts.push(delta);
+
+                    self.curTime = new Date();
+                    self.times.push(self.curTime - self.lastTime);
+                    self.lastTime = self.curTime;
+
+                    self.$res.val('var deltasArr = [' + self.delts + '];' + '\n' + 'var timesArr = [' + self.times + ']');
+                }, false);
+
+                new WheelIndicator({
+                    callback: function(e){
+                        if(e.direction === 'up') {
+                            dir = 'fa fa-arrow-up';
+                        } else {
+                            dir = 'fa fa-arrow-down';
+                        }
+
+                        self.$dir.append('<i class="' + dir + '"></i>');
+                    }
+                });
+                
+            },
+            
+            collectData: function(){
+                this.delts = [];
+                this.times = [];
+                this.$dir = $('.direction');
+                this.$res = $('.result');
+                this.$graph = $('.graph');
+                this.lastTime = new Date();
+                this.curTime = false;
+
+                this.i = 0;
+            },
+
+            getDeltaY: function(event){
                 if(event.wheelDelta) {
                     getDeltaY = function(event) {
-                        return event.wheelDelta / -120;
+                        return event.wheelDelta;
                     }
                 } else {
                     getDeltaY = function(event) {
@@ -53,39 +134,20 @@
                     }
                 }
                 return getDeltaY(event);
-            };
+            },
 
-            var delts = [],
-                times = [],
-                $dir = $('.direction'),
-                $res = $('.result'),
-                lastTime = new Date(),
-                curTime = false;
+            draw: function(delta){
+                this.i++;
 
-            document.addEventListener('wheel', function(e){
-                var delta = getDeltaY(e);
+                var dot = $('<div class="dot" style="left: ' + this.i + 'px; top: ' + (delta * 1.5) + 'px"></div>');
 
-                delts.push(delta);
+                this.$graph.css('left', (this.i * -1)).append(dot);
+            }
+            
+        };
 
-                curTime = new Date();
-                times.push(curTime - lastTime);
-                lastTime = curTime;
-
-                $res.val('var deltasArr = [' + delts + '];' + '\n' + 'var timesArr = [' + times + ']');
-            }, false);
-
-            new WheelIndicator({
-                callback: function(e){
-                    if(e.direction === 'up') {
-                        dir = 'fa fa-arrow-up';
-                    } else {
-                        dir = 'fa fa-arrow-down';
-                    }
-
-                    $dir.append('<i class="' + dir + '"></i>');
-                }
-            });
-
+        $(document).ready(function(){
+            app.init();
         });
     </script>
 
@@ -93,7 +155,16 @@
 
 </head>
 <body>
+
+    <h3>DATA</h3>
     <textarea class="result" name="res" id="res" readonly></textarea>
+
+    <h3>DIRECTION</h3>
     <div class="direction"></div>
+
+    <h3>TRACKING</h3>
+    <div class="graph_wrap">
+        <div class="graph"></div>
+    </div>
 </body>
 </html>
