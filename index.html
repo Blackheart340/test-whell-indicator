@@ -28,8 +28,6 @@
             color: #fff;
 
             width: 100%;
-            height: 100%;
-            overflow: hidden;
         }
 
         .result
@@ -63,6 +61,12 @@
             margin-top: 400px;
         }
 
+        .color_timer
+        {
+            padding: 50px;
+            background: #ffffff;
+        }
+
         .dot
         {
             position: absolute;
@@ -70,6 +74,12 @@
             height: 2px;
             background-color: #000;
             border-radius: 50%;
+        }
+
+        .color_timer
+        {
+            font-size: 18px;
+            line-height: 24px;
         }
 
     </style>
@@ -91,7 +101,11 @@
                     self.delts.push(delta);
 
                     self.curTime = new Date();
-                    self.times.push(self.curTime - self.lastTime);
+
+                    var time = self.curTime - self.lastTime;
+                    self.colorize(time);
+
+                    self.times.push(time);
                     self.lastTime = self.curTime;
 
                     self.$res.val('var deltasArr = [' + self.delts + '];' + '\n' + 'var timesArr = [' + self.times + ']');
@@ -115,6 +129,8 @@
                 this.delts = [];
                 this.times = [];
                 this.$dir = $('.direction');
+                this.$colorTimer = $('.color_timer');
+                this.colors = [ '000', 'f94c00', 'f9bb00', '00f975', '0075f9' ];
                 this.$res = $('.result');
                 this.$graph = $('.graph');
                 this.lastTime = new Date();
@@ -142,6 +158,29 @@
                 var dot = $('<div class="dot" style="left: ' + this.i + 'px; top: ' + (delta * 1.5) + 'px"></div>');
 
                 this.$graph.css('left', (this.i * -1)).append(dot);
+            },
+
+            colorize: function(time){
+                var color = this.colors[0];
+                if(time < 100) {
+                    color = this.colors[1];
+                }
+
+                if(time < 60) {
+                    color = this.colors[2];
+                }
+
+                if(time < 25) {
+                    color = this.colors[3];
+                }
+
+                if(time < 15) {
+                    color = this.colors[4];
+                }
+
+                var coloredTime = $('<span style="color: #'+ color + '">' + time + ' </span>');
+                this.$colorTimer.append(coloredTime);
+
             }
             
         };
@@ -165,6 +204,11 @@
     <h3>TRACKING</h3>
     <div class="graph_wrap">
         <div class="graph"></div>
+    </div>
+
+    <h3>COLOR TIMER</h3>
+    <div class="color_timer">
+
     </div>
 </body>
 </html>
